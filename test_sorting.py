@@ -109,14 +109,14 @@ def call_sort(executable, run_index):
                    # ref_path = f"outputs/run{run_index}/nativesort/{batch}/{infile}"
                    # cmp = subprocess.run(["cmp", "--silent", ref_path, output_path])
                    # if cmp.returncode == 0:
-                   #     result_file.write(f"{infile} sorted correctly by {executable} in {elapsed} seconds.\n")
+                   #     result_file.write(f"{infile} sorted correctly by {executable} in {elapsed} miliseconds.\n")
                    # else:
-                   #     result_file.write(f"{infile} sorted incorrectly by {executable} in {elapsed} seconds.\n")
+                   #     result_file.write(f"{infile} sorted incorrectly by {executable} in {elapsed} miliseconds.\n")
                 else:
                     result_file.write(f"{infile} sorted in {elapsed} miliseconds.\n")
 
             batch_elapsed = int((time.time() - batch_start) * 1000)
-            print(f"{batch} sorted in {batch_elapsed} seconds.")
+            print(f"{batch} sorted in {batch_elapsed} miliseconds.")
 
 
 def cleanup():
