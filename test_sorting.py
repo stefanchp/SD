@@ -63,7 +63,7 @@ def call_sort(executable, run_index):
 
     with open(result_file_path, 'w') as result_file:
         for batch in sorted(os.listdir(input_root)):
-            print(f"Sorting batch {batch} with {executable}...")
+            print(f"Sorting {batch} with {executable}...")
             batch_path = os.path.join(input_root, batch)
             out_batch_path = os.path.join(output_root, batch)
             os.makedirs(out_batch_path, exist_ok=True)
@@ -78,6 +78,8 @@ def call_sort(executable, run_index):
                 t0 = time.time()
                 if executable == "nativesortpython.py":
                     result = subprocess.run(["python", executable, input_path, output_path])
+                elif executable == 'nativesort':
+                    result = subprocess.run([f"./{executable}", input_path, output_path])
                 else:
                     sort_dirs = ["QuickSort", "BucketSort", "ShellSort", "HeapSort", "RadixSort", "MergeSort"]
                     exe_found = False
@@ -114,7 +116,7 @@ def call_sort(executable, run_index):
                     result_file.write(f"{infile} sorted in {elapsed} miliseconds.\n")
 
             batch_elapsed = int((time.time() - batch_start) * 1000)
-            print(f"Batch {batch} sorted in {batch_elapsed} seconds.")
+            print(f"{batch} sorted in {batch_elapsed} seconds.")
 
 
 def cleanup():
@@ -140,19 +142,19 @@ def main(run_count=1):
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         Path(result_dir).mkdir(parents=True, exist_ok=True)
 
-      #  start = time.time()
-      #  generate_tests(input_dir)
-      #  print(f"Test generation done in {int(time.time() - start)} seconds.")
+        start = time.time()
+        generate_tests(input_dir)
+        print(f"Test generation done in {int(time.time() - start)} seconds.")
 
-      #  print("Sorting with C++ built-in sort...")
-      #  start = time.time()
-      #  call_sort("nativesort", run)
-      #  print(f"C++ sort done in {int(time.time() - start)} seconds.")
+        print("Sorting with C++ built-in sort...")
+        start = time.time()
+        call_sort("nativesort", run)
+        print(f"C++ sort done in {int(time.time() - start)} seconds.")
 
-      #  print("Sorting with Python built-in sort...")
-      #  start = time.time()
-      #  call_sort("nativesortpython.py", run)
-      #  print(f"Python sort done in {int(time.time() - start)} seconds.")
+        print("Sorting with Python built-in sort...")
+        start = time.time()
+        call_sort("nativesortpython.py", run)
+        print(f"Python sort done in {int(time.time() - start)} seconds.")
 
         for dir in sorting_paths:
             for cpp_file in Path(dir).glob("*.cpp"):
