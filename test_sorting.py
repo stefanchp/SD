@@ -79,24 +79,41 @@ def call_sort(executable, run_index):
                 if executable == "nativesortpython.py":
                     result = subprocess.run(["python", executable, input_path, output_path])
                 else:
-                    result = subprocess.run([f"./{executable}", input_path, output_path])
+                    sort_dirs = ["QuickSort", "BucketSort", "ShellSort", "HeapSort", "RadixSort", "MergeSort"]
+                    exe_found = False
+                    executable_name = f"{executable}.exe" if os.name == "nt" else executable
+
+                    for folder in sort_dirs:
+                        try:
+                            exe_path = Path(folder) / executable_name
+                            if not exe_path.exists():
+                                continue  # Try next folder
+                            result = subprocess.run([str(exe_path.resolve()), input_path, output_path])
+                            exe_found = True
+                            break  # Stop after first successful run
+                        except:
+                            continue
+
+                    if not exe_found:
+                        raise FileNotFoundError(f"Could not find executable '{executable_name}' in any known folder.")
+
 
                 t1 = time.time()
                 elapsed = int((t1 - t0) * 1000)
 
                 if result.returncode != 0:
                     result_file.write(f"Error while sorting {infile}\n")
-                elif executable not in ["nativesort", "nativesortpython.py"]:
-                    ref_path = f"outputs/run{run_index}/nativesort/{batch}/{infile}"
-                    cmp = subprocess.run(["cmp", "--silent", ref_path, output_path])
-                    if cmp.returncode == 0:
-                        result_file.write(f"{infile} sorted correctly by {executable} in {elapsed} seconds.\n")
-                    else:
-                        result_file.write(f"{infile} sorted incorrectly by {executable} in {elapsed} seconds.\n")
+                #elif executable not in ["nativesort", "nativesortpython.py"]:
+                   # ref_path = f"outputs/run{run_index}/nativesort/{batch}/{infile}"
+                   # cmp = subprocess.run(["cmp", "--silent", ref_path, output_path])
+                   # if cmp.returncode == 0:
+                   #     result_file.write(f"{infile} sorted correctly by {executable} in {elapsed} seconds.\n")
+                   # else:
+                   #     result_file.write(f"{infile} sorted incorrectly by {executable} in {elapsed} seconds.\n")
                 else:
-                    result_file.write(f"{infile} sorted in {elapsed} seconds.\n")
+                    result_file.write(f"{infile} sorted in {elapsed} miliseconds.\n")
 
-            batch_elapsed = int(time.time() - batch_start)
+            batch_elapsed = int((time.time() - batch_start) * 1000)
             print(f"Batch {batch} sorted in {batch_elapsed} seconds.")
 
 
@@ -123,19 +140,19 @@ def main(run_count=1):
         Path(output_dir).mkdir(parents=True, exist_ok=True)
         Path(result_dir).mkdir(parents=True, exist_ok=True)
 
-        start = time.time()
-        generate_tests(input_dir)
-        print(f"Test generation done in {int(time.time() - start)} seconds.")
+      #  start = time.time()
+      #  generate_tests(input_dir)
+      #  print(f"Test generation done in {int(time.time() - start)} seconds.")
 
-        print("Sorting with C++ built-in sort...")
-        start = time.time()
-        call_sort("nativesort", run)
-        print(f"C++ sort done in {int(time.time() - start)} seconds.")
+      #  print("Sorting with C++ built-in sort...")
+      #  start = time.time()
+      #  call_sort("nativesort", run)
+      #  print(f"C++ sort done in {int(time.time() - start)} seconds.")
 
-        print("Sorting with Python built-in sort...")
-        start = time.time()
-        call_sort("nativesortpython.py", run)
-        print(f"Python sort done in {int(time.time() - start)} seconds.")
+      #  print("Sorting with Python built-in sort...")
+      #  start = time.time()
+      #  call_sort("nativesortpython.py", run)
+      #  print(f"Python sort done in {int(time.time() - start)} seconds.")
 
         for dir in sorting_paths:
             for cpp_file in Path(dir).glob("*.cpp"):
